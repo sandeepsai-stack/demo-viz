@@ -2,7 +2,7 @@
   "name": "viz-app",
   "private": true,
   "version": "0.0.0",
-  "homepage": "https://sandeepsai-stack.github.io/demo-viz",
+  "homepage": "https://sandeepsai-stack.github.io/demo-viz/",
   "type": "module",
   "scripts": {
     "dev": "vite",
