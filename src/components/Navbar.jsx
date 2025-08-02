@@ -12,7 +12,7 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="navbar-container">
         <div className="navbar-brand">
-          <h1 className="navbar-title">Viz App</h1>
+          <h1 className="navbar-title">Martian</h1>
         </div>
         
         <ul className="navbar-nav">
