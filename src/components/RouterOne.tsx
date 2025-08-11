@@ -252,10 +252,9 @@ export const RouterOne = () => {
     useEffect(() => {
         if (!svgRef.current) return;
         const svg = d3.select(svgRef.current);
-        const width = svgRef.current.clientWidth;
-        const height = svgRef.current.clientHeight;
+        const width = 1200;
+        const height = 460;
 
-        console.log(width, height)
         // Clear previous visualization
         svg.selectAll('*').remove();
         // Add a subtle gradient background for the visualization area
@@ -411,7 +410,7 @@ export const RouterOne = () => {
         };
         drawNeuralNetwork();
         // Add router label with better styling
-        routerGroup.append('text').attr('text-anchor', 'middle').attr('dy', routerRadius + 15).attr('fill', 'white').attr('font-size', '14px').attr('font-weight', 'bold').attr('filter', 'url(#shadow)').text('Router');
+        routerGroup.append('text').attr('text-anchor', 'middle').attr('dy', routerRadius + 15).attr('fill', '#000').attr('font-size', '14px').attr('font-weight', 'bold').attr('filter', 'url(#shadow)').text('Router');
         // Add router analysis label with better styling
         if (animationInProgress) {
             routerGroup.append('text').attr('text-anchor', 'middle').attr('dy', routerRadius + 35).attr('fill', '#6366F1').attr('font-size', '14px').attr('font-weight', 'bold').attr('filter', 'url(#shadow)').text('Analyzing prompt...');
@@ -531,11 +530,11 @@ export const RouterOne = () => {
             promptGradient.append('stop').attr('offset', '0%').attr('stop-color', '#F9FAFB');
             promptGradient.append('stop').attr('offset', '100%').attr('stop-color', '#F3F4F6');
             // Prompt container with better styling
-            promptGroup.append('rect').attr('width', 220).attr('height', 110).attr('x', -110).attr('y', -55).attr('rx', 12).attr('fill', 'url(#prompt-gradient)').attr('stroke', animationInProgress ? '#6366F1' : '#9CA3AF').attr('stroke-width', animationInProgress ? 2 : 1.5).attr('filter', 'url(#shadow)');
+            promptGroup.append('rect').attr('width', 420).attr('height', 105).attr('x', -210).attr('y', -55).attr('rx', 12).attr('fill', 'url(#prompt-gradient)').attr('stroke', animationInProgress ? '#6366F1' : '#9CA3AF').attr('stroke-width', animationInProgress ? 2 : 1.5).attr('filter', 'url(#shadow)');
             // Add type indicator with better styling
             const typeColor = selectedPrompt.type === 'simple' ? '#3B82F6' : selectedPrompt.type === 'complex' ? '#8B5CF6' : '#10B981';
             // Type indicator badge with better styling
-            promptGroup.append('rect').attr('x', -95).attr('y', -45).attr('width', 110).attr('height', 22).attr('rx', 11).attr('fill', typeColor).attr('opacity', 0.15);
+            promptGroup.append('rect').attr('x', -95).attr('y', -45).attr('width', 145).attr('height', 22).attr('rx', 11).attr('fill', typeColor).attr('opacity', 0.15);
             promptGroup.append('circle').attr('cx', -85).attr('cy', -34).attr('r', 5).attr('fill', typeColor);
             promptGroup.append('text').attr('x', -75).attr('y', -30).attr('fill', d3.color(typeColor).darker(0.5)).attr('font-weight', 'bold').attr('font-size', '14px').text(`${selectedPrompt.type.charAt(0).toUpperCase() + selectedPrompt.type.slice(1)} Prompt`);
             // Truncate and wrap the prompt text with better styling
@@ -624,7 +623,7 @@ export const RouterOne = () => {
                     const midY = (routerY + modelY) / 2;
                     const rationale = svg.append('g').attr('opacity', 0);
                     // Add background for better readability with enhanced styling
-                    rationale.append('rect').attr('x', midX - 85).attr('y', midY - 45).attr('width', 170).attr('height', 90).attr('rx', 12).attr('fill', 'white').attr('stroke', '#E5E7EB').attr('stroke-width', 1.5).attr('opacity', 0.97).attr('filter', 'url(#shadow)');
+                    rationale.append('rect').attr('x', midX - 85).attr('y', midY - 45).attr('width', 170).attr('height', 115).attr('rx', 12).attr('fill', 'white').attr('stroke', '#E5E7EB').attr('stroke-width', 1.5).attr('opacity', 0.97).attr('filter', 'url(#shadow)');
                     // Routing decision title with better styling
                     rationale.append('text').attr('x', midX).attr('y', midY - 25).attr('text-anchor', 'middle').attr('fill', '#1F2937').attr('font-size', '13px').attr('font-weight', 'bold').text('Routing Decision');
                     // Routing strategy with better styling
@@ -687,18 +686,18 @@ export const RouterOne = () => {
             const scores = getModelScores();
             const scorePanel = svg.append('g').attr('transform', `translate(${width * 0.15}, ${height * 0.5})`).attr('opacity', 0);
             // Score panel background with better styling
-            scorePanel.append('rect').attr('x', -120).attr('y', -20 - scores.length * 12.5).attr('width', 240).attr('height', 40 + scores.length * 25).attr('rx', 12).attr('fill', 'white').attr('stroke', '#E5E7EB').attr('stroke-width', 1.5).attr('opacity', 0.97).attr('filter', 'url(#shadow)');
+            scorePanel.append('rect').attr('x', -120).attr('y', -125 - scores.length * 12.5).attr('width', 290).attr('height', 60 + scores.length * 25).attr('rx', 12).attr('fill', 'white').attr('stroke', '#E5E7EB').attr('stroke-width', 1.5).attr('opacity', 0.97).attr('filter', 'url(#shadow)');
             // Panel title with better styling
-            scorePanel.append('text').attr('x', 0).attr('y', -20 - scores.length * 12.5 + 25).attr('text-anchor', 'middle').attr('font-size', '15px').attr('font-weight', 'bold').attr('fill', '#1F2937').text('Model Scoring');
+            scorePanel.append('text').attr('x', 0).attr('y', -120 - scores.length * 12.5 + 25).attr('text-anchor', 'middle').attr('font-size', '15px').attr('font-weight', 'bold').attr('fill', '#1F2937').text('Model Scoring');
             // Column headers with better styling
-            scorePanel.append('text').attr('x', -100).attr('y', -20 - scores.length * 12.5 + 45).attr('font-size', '12px').attr('font-weight', 'bold').attr('fill', '#4B5563').text('Model');
-            scorePanel.append('text').attr('x', -20).attr('y', -20 - scores.length * 12.5 + 45).attr('font-size', '12px').attr('font-weight', 'bold').attr('fill', '#4B5563').text('Score');
-            scorePanel.append('text').attr('x', 70).attr('y', -20 - scores.length * 12.5 + 45).attr('font-size', '12px').attr('font-weight', 'bold').attr('fill', '#4B5563').text('Features');
+            scorePanel.append('text').attr('x', -100).attr('y', -120 - scores.length * 12.5 + 45).attr('font-size', '12px').attr('font-weight', 'bold').attr('fill', '#4B5563').text('Model');
+            scorePanel.append('text').attr('x', -20).attr('y', -120 - scores.length * 12.5 + 45).attr('font-size', '12px').attr('font-weight', 'bold').attr('fill', '#4B5563').text('Score');
+            scorePanel.append('text').attr('x', 70).attr('y', -120 - scores.length * 12.5 + 45).attr('font-size', '12px').attr('font-weight', 'bold').attr('fill', '#4B5563').text('Features');
             // Separator line with better styling
-            scorePanel.append('line').attr('x1', -110).attr('y1', -20 - scores.length * 12.5 + 50).attr('x2', 110).attr('y2', -20 - scores.length * 12.5 + 50).attr('stroke', '#E5E7EB').attr('stroke-width', 1.5);
+            scorePanel.append('line').attr('x1', -110).attr('y1', -120 - scores.length * 12.5 + 50).attr('x2', 110).attr('y2', -20 - scores.length * 12.5 + 50).attr('stroke', '#E5E7EB').attr('stroke-width', 1.5);
             // Add each model score with better styling
             scores.forEach((score, i) => {
-                const y = -20 - scores.length * 12.5 + 70 + i * 25;
+                const y = -120 - scores.length * 12.5 + 70 + i * 25;
                 // Model name with specialization/size icon with better styling
                 const modelIcon = score.specialization === 'legal' ? '⚖️' : score.specialization === 'medical' ? '🩺' : score.specialization === 'technical' ? '💻' : score.size === 'small' ? '🔹' : score.size === 'medium' ? '🔷' : '🔶';
                 scorePanel.append('text').attr('x', -100).attr('y', y).attr('font-size', '13px').attr('fill', '#1F2937').text(`${modelIcon} ${score.name}`);
@@ -797,9 +796,9 @@ export const RouterOne = () => {
         <div className="max-w-7xl mx-auto">
             <div className="bg-white rounded-lg shadow-md p-6">
                 <div className="mb-8">
-                    <h2 className="text-xl font-semibold mb-4">Prompt Router Demo:</h2>
+                    <h1 className="text-3xl font-semibold mb-4">Prompt Router Demo:</h1>
                     {/* Demo controls */}
-                    <div className="flex items-center justify-between mb-6 bg-gray-50 p-4 rounded-lg">
+                    <div className="bg-mt-gray flex items-center justify-between mb-6 p-4 rounded-lg">
                         <div className="flex items-center space-x-2">
                             <button onClick={handlePrevPrompt} disabled={animationInProgress} className="p-2 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed" title="Previous prompt">
                                 <StepBackIcon size={20} />
@@ -826,7 +825,7 @@ export const RouterOne = () => {
                         </div>
                     </div>
                     {/* Current prompt card */}
-                    <div className="bg-indigo-50 p-4 rounded-lg border-l-4 border-indigo-500 mb-4">
+                    <div className="p-4 rounded-lg border-l-4 bg-mt-active-prompt mb-4">
                         <div className="flex items-center mb-2">
                             <span className={`inline-block w-3 h-3 rounded-full mr-2 ${selectedPrompt.type === 'simple' ? 'bg-blue-500' : selectedPrompt.type === 'complex' ? 'bg-purple-500' : 'bg-green-500'}`}></span>
                             <span className="font-medium text-gray-800">
@@ -841,7 +840,7 @@ export const RouterOne = () => {
                     </div>
                     {/* All prompts list (collapsed) */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 mb-6">
-                        {promptExamples.map((prompt, index) => <div key={index} className={`p-3 rounded-lg cursor-pointer transition-all ${currentPromptIndex === index ? 'bg-indigo-100 border-2 border-indigo-500' : 'bg-gray-100 border-2 border-transparent hover:bg-gray-200'}`} onClick={() => {
+                        {promptExamples.map((prompt, index) => <div key={index} className={`p-3 rounded-lg cursor-pointer transition-all ${currentPromptIndex === index ? 'bg-mt-active-prompt border-2' : 'bg-mt-gray border-2 border-transparent hover:bg-gray-200'}`} onClick={() => {
                             setCurrentPromptIndex(index);
                             setSelectedPrompt(prompt);
                         }}>
@@ -984,63 +983,7 @@ export const RouterOne = () => {
                 <div className="border-t border-gray-200 pt-6">
                     <h2 className="text-xl font-semibold mb-4">Routing Visualization:</h2>
                     <div className="h-[500px] w-full">
-                        <svg ref={svgRef} width="100%" height="100%"></svg>
-                    </div>
-                </div>
-                {/* Router Explanation */}
-                <div className="mt-8 mb-6 border-t border-gray-200 pt-6">
-                    <h2 className="text-xl font-semibold mb-4">How The Router Works:</h2>
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                        <div className="flex items-center mb-3">
-                            <BrainIcon size={20} className="text-indigo-500 mr-2" />
-                            <span className="font-medium text-gray-800">
-                                Neural Network Classification
-                            </span>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-4">
-                            The router uses a neural network to analyze the prompt's
-                            characteristics, extracting features like:
-                        </p>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm mb-4">
-                            <div className="bg-white p-3 rounded-lg shadow-sm">
-                                <div className="flex items-center mb-2">
-                                    <ActivityIcon size={16} className="text-blue-500 mr-2" />
-                                    <span className="font-medium">Complexity Analysis</span>
-                                </div>
-                                <p className="text-xs text-gray-600">
-                                    Measures prompt complexity to determine if a larger model is
-                                    needed
-                                </p>
-                            </div>
-                            <div className="bg-white p-3 rounded-lg shadow-sm">
-                                <div className="flex items-center mb-2">
-                                    <CpuIcon size={16} className="text-green-500 mr-2" />
-                                    <span className="font-medium">Domain Detection</span>
-                                </div>
-                                <p className="text-xs text-gray-600">
-                                    Identifies specialized domains that benefit from expert models
-                                </p>
-                            </div>
-                            <div className="bg-white p-3 rounded-lg shadow-sm">
-                                <div className="flex items-center mb-2">
-                                    <NetworkIcon size={16} className="text-amber-500 mr-2" />
-                                    <span className="font-medium">Pattern Matching</span>
-                                </div>
-                                <p className="text-xs text-gray-600">
-                                    Compares with historical data to find similar successfully
-                                    routed prompts
-                                </p>
-                            </div>
-                        </div>
-                        <div className="flex items-center mb-3">
-                            <BarChartIcon size={20} className="text-indigo-500 mr-2" />
-                            <span className="font-medium text-gray-800">Scoring System</span>
-                        </div>
-                        <p className="text-sm text-gray-600">
-                            The router scores each model based on predicted performance for the
-                            specific prompt type, balancing quality requirements with
-                            computational efficiency, and selects the highest-scoring model.
-                        </p>
+                        <svg ref={svgRef} viewBox="0 0 1200 460" width="100%" ></svg>
                     </div>
                 </div>
                 {/* Performance Comparison Section */}
@@ -1158,9 +1101,7 @@ export const RouterOne = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="h-[450px] w-full">
-                        <svg ref={performanceChartRef} width="100%" height="100%"></svg>
-                    </div>
+                    <svg ref={performanceChartRef} viewBox="0 0 1200 460" width="100%"></svg>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                         <div className="bg-blue-50 p-4 rounded-lg">
                             <h3 className="font-medium text-blue-800 mb-2">
@@ -1246,41 +1187,41 @@ export const RouterOne = () => {
                         </button>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                        <div className="bg-indigo-50 p-4 rounded-lg border-l-4 border-indigo-500">
+                        <div className="bg-mt-red p-4 rounded-lg border-l-4">
                             <div className="flex items-center mb-2">
-                                <DollarSignIcon size={20} className="text-indigo-600 mr-2" />
-                                <h3 className="font-medium text-indigo-900">Cost Reduction</h3>
+                                <DollarSignIcon size={20} className="mr-2" />
+                                <h3 className="font-medium">Cost Reduction</h3>
                             </div>
-                            <div className="text-3xl font-bold text-indigo-700 mb-2">
+                            <div className="text-3xl font-bold text-white mb-2">
                                 {savingsData.savings['Cost Savings'].toFixed(0)}%
                             </div>
-                            <p className="text-sm text-indigo-700">
+                            <p className="text-sm text-white">
                                 Savings compared to always using LargeGPT by routing simple
                                 prompts to smaller models
                             </p>
                         </div>
-                        <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
+                        <div className="bg-mt-green p-4 rounded-lg border-l-4">
                             <div className="flex items-center mb-2">
-                                <TargetIcon size={20} className="text-green-600 mr-2" />
-                                <h3 className="font-medium text-green-900">Performance Gain</h3>
+                                <TargetIcon size={20} className="mr-2" />
+                                <h3 className="font-medium">Performance Gain</h3>
                             </div>
-                            <div className="text-3xl font-bold text-green-700 mb-2">
+                            <div className="text-3xl font-bold text-white mb-2">
                                 {savingsData.savings['Performance Improvement'].toFixed(1)}%
                             </div>
-                            <p className="text-sm text-green-700">
+                            <p className="text-sm text-white">
                                 Improved accuracy by routing to specialized models for
                                 domain-specific prompts
                             </p>
                         </div>
-                        <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-500">
+                        <div className="bg-mt-yellow p-4 rounded-lg border-l-4">
                             <div className="flex items-center mb-2">
-                                <ZapIcon size={20} className="text-purple-600 mr-2" />
-                                <h3 className="font-medium text-purple-900">Efficiency Boost</h3>
+                                <ZapIcon size={20} className="mr-2" />
+                                <h3 className="font-medium">Efficiency Boost</h3>
                             </div>
-                            <div className="text-3xl font-bold text-purple-700 mb-2">
+                            <div className="text-3xl font-bold text-white mb-2">
                                 {savingsData.savings['Efficiency Gain'].toFixed(0)}%
                             </div>
-                            <p className="text-sm text-purple-700">
+                            <p className="text-sm text-white">
                                 Overall performance per unit cost compared to using a single model
                             </p>
                         </div>
@@ -1397,21 +1338,21 @@ export const RouterOne = () => {
                         </div>
                     </div>}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="bg-blue-50 p-4 rounded-lg">
-                            <h3 className="font-medium text-blue-800 mb-2">
+                        <div className="bg-mt-red p-4 rounded-lg">
+                            <h3 className="font-medium text-white mb-2">
                                 Cost Optimization
                             </h3>
-                            <p className="text-sm text-blue-700">
+                            <p className="text-sm text-white">
                                 By routing simple prompts to smaller models, organizations can
                                 reduce compute costs while maintaining quality for straightforward
                                 tasks.
                             </p>
                         </div>
-                        <div className="bg-green-50 p-4 rounded-lg">
-                            <h3 className="font-medium text-green-800 mb-2">
+                        <div className="bg-mt-green p-4 rounded-lg">
+                            <h3 className="font-medium text-white mb-2">
                                 Quality Improvement
                             </h3>
-                            <p className="text-sm text-green-700">
+                            <p className="text-sm text-white">
                                 Specialist models provide more accurate and reliable responses for
                                 domain-specific queries, improving overall user experience.
                             </p>

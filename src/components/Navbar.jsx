@@ -12,14 +12,19 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="navbar-container">
         <div className="navbar-brand">
-          <h1 className="navbar-title">Martian</h1>
+          <div class="navbar-logo">
+            <NavLink
+              to="/demo-viz/gateway">
+              <img src="https://cdn.prod.website-files.com/67f3937090e003651f8bb994/67f3a72e058c2eb8b994bd02_Martian%20Primary%20Logo.svg" loading="eager" width="150" alt="logo" />
+            </NavLink>
+          </div>
         </div>
-        
+
         <ul className="navbar-nav">
           <li className="nav-item">
-            <NavLink 
-              to="/demo-viz/gateway" 
-              className={({ isActive }) => 
+            <NavLink
+              to="/demo-viz/gateway"
+              className={({ isActive }) =>
                 `nav-link ${isGatewayActive(isActive) ? 'nav-link-active' : ''}`
               }
             >
@@ -27,9 +32,9 @@ const Navbar = () => {
             </NavLink>
           </li>
           <li className="nav-item">
-            <NavLink 
-              to="/demo-viz/router" 
-              className={({ isActive }) => 
+            <NavLink
+              to="/demo-viz/router"
+              className={({ isActive }) =>
                 `nav-link ${isActive ? 'nav-link-active' : ''}`
               }
             >

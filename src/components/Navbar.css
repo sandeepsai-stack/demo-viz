@@ -1,11 +1,9 @@
 .navbar {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
   z-index: 1000;
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid #5b5b5b;
 }
 
 .navbar-container {
@@ -45,10 +43,11 @@
 }
 
 .nav-link {
-  color: rgba(255, 255, 255, 0.9);
+  color: #242424;
+  text-transform: uppercase;
   text-decoration: none;
   font-weight: 500;
-  font-size: 1rem;
+  font-size: 0.75rem;
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   transition: all 0.3s ease;
@@ -59,48 +58,51 @@
 
 /* Hover state */
 .nav-link:hover {
-  color: white;
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  position: relative;
+  color: #242424;
+}
+
+.nav-link:hover::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: linear-gradient(90deg, #242424, #242424);
+  border-radius: 2px;
+  animation: slideInHover 0.3s ease forwards;
 }
 
 /* Active state */
 .nav-link-active {
-  color: white;
-  background: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  transform: translateY(-2px);
+  position: relative;
+  color: #242424;
 }
 
 .nav-link-active::after {
   content: '';
   position: absolute;
   bottom: -2px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 30px;
-  height: 3px;
-  background: linear-gradient(90deg, #ff6b6b, #feca57);
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: linear-gradient(90deg, #242424, #242424);
   border-radius: 2px;
-  animation: slideIn 0.3s ease;
+  animation: slideInHover 0.3s ease forwards;
 }
 
 /* Focus state for accessibility */
 .nav-link:focus {
-  outline: 2px solid rgba(255, 255, 255, 0.5);
-  outline-offset: 2px;
 }
 
-/* Animation for active indicator */
-@keyframes slideIn {
+/* Animation for hover border */
+@keyframes slideInHover {
   from {
     width: 0;
-    opacity: 0;
   }
   to {
-    width: 30px;
-    opacity: 1;
+    width: 100%;
   }
 }
 
@@ -126,10 +128,3 @@
     font-size: 1.3rem;
   }
 }
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .navbar {
-    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-  }
-} 

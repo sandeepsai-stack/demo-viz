@@ -861,41 +861,41 @@ const RouterTwo = () => {
 
           {/* Metrics Dashboard */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+            <div className="bg-mt-red rounded-xl p-6 shadow-lg">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-500">Cost Savings</span>
+                <span className="text-sm font-medium">Cost Savings</span>
                 <span className="text-2xl">💰</span>
               </div>
-              <p className="text-3xl font-bold text-green-600">
+              <p className="text-3xl font-bold">
                 {formatCurrency(totalSavings)}
               </p>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm mt-1">
                 vs. always using premium models
               </p>
             </div>
 
-            <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+            <div className="bg-mt-green rounded-xl p-6 shadow-lg">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-500">Queries Processed</span>
+                <span className="text-sm font-medium">Queries Processed</span>
                 <span className="text-2xl">⚡</span>
               </div>
-              <p className="text-3xl font-bold text-indigo-600">
+              <p className="text-3xl font-bold">
                 {processedCount.toLocaleString()}
               </p>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm mt-1">
                 intelligently routed today
               </p>
             </div>
 
-            <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+            <div className="bg-mt-yellow rounded-xl p-6 shadow-lg">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-500">Avg Response Time</span>
+                <span className="text-sm font-medium">Avg Response Time</span>
                 <span className="text-2xl">🚀</span>
               </div>
-              <p className="text-3xl font-bold text-purple-600">
+              <p className="text-3xl font-bold">
                 0.8s
               </p>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm mt-1">
                 65% faster than baseline
               </p>
             </div>
@@ -909,7 +909,7 @@ const RouterTwo = () => {
               </h2>
               <button
                 onClick={() => setIsPaused(!isPaused)}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                className="px-4 py-2 bg-mt-red rounded-lg transition-colors"
               >
                 {isPaused ? 'Resume' : 'Pause'} Animation
               </button>

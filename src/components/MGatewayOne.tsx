@@ -1,19 +1,34 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 
+interface Provider {
+    id: string;
+    name: string;
+    x: number;
+    y: number;
+    status: string;
+    color: string;
+}
+
+interface Query {
+    id: number;
+    text: string;
+    timestamp: string;
+}
+
 const MGatewayOne = () => {
-    const svgRef = useRef(null);
-    const [queries, setQueries] = useState([]);
+    const svgGatewayOneRef = useRef(null);
+    const [queries, setQueries] = useState([] as Query[]);
     const [totalSaved, setTotalSaved] = useState(0);
     const [queryCount, setQueryCount] = useState(0);
 
-    const providers = [
-        { id: 'chatgpt', name: 'ChatGPT', x: 700, y: 100, status: 'active', color: '#10a37f' },
-        { id: 'claude', name: 'Claude', x: 700, y: 250, status: 'active', color: '#6b46c1' },
-        { id: 'llama', name: 'Llama 8B', x: 700, y: 400, status: 'active', color: '#ff6b35' }
+    const providers: Provider[] = [
+        { id: 'chatgpt', name: 'ChatGPT', x: 1100, y: 100, status: 'active', color: '#236554' },
+        { id: 'claude', name: 'Claude', x: 1100, y: 250, status: 'active', color: '#FF7D68' },
+        { id: 'llama', name: 'Llama 8B', x: 1100, y: 400, status: 'active', color: '#A73F2E' }
     ];
 
-    const sampleQueries = [
+    const sampleQueries: string[] = [
         "What is the world position right now?",
         "Explain quantum computing simply",
         "How do I train a neural network?",
@@ -23,7 +38,11 @@ const MGatewayOne = () => {
     ];
 
     useEffect(() => {
-        const svg = d3.select(svgRef.current);
+        const svg = d3.select(svgGatewayOneRef.current);
+        const width = 1200;
+        const height = 600;
+
+        svg.attr('viewBox', `0 0 ${width} ${height}`);
 
         // Clear previous content
         svg.selectAll("*").remove();
@@ -46,9 +65,9 @@ const MGatewayOne = () => {
 
         // User to Gateway connection
         connections.append("line")
-            .attr("x1", 200)
+            .attr("x1", 220)
             .attr("y1", 250)
-            .attr("x2", 350)
+            .attr("x2", 320)
             .attr("y2", 250)
             .attr("stroke", "#64748b")
             .attr("stroke-width", 2)
@@ -70,33 +89,30 @@ const MGatewayOne = () => {
 
         // Draw user
         const userGroup = svg.append("g")
-            .attr("transform", "translate(100, 250)");
+            .attr("transform", "translate(135, 250)");
 
         userGroup.append("circle")
-            .attr("r", 40)
-            .attr("fill", "#f0f9ff")
-            .attr("stroke", "#0ea5e9")
+            .attr("r", 80)
+            .attr("fill", "#FF563F")
+            .attr("stroke", "#ffbfc2")
             .attr("stroke-width", 2);
 
         userGroup.append("text")
             .attr("text-anchor", "middle")
             .attr("y", 5)
-            .attr("fill", "#0c4a6e")
-            .style("font-size", "14px")
+            .attr("fill", "#fff")
+            .style("font-size", "1.4em")
             .style("font-weight", "500")
             .text("User");
 
         // Draw Gateway
         const gatewayGroup = svg.append("g")
-            .attr("transform", "translate(450, 250)");
+            .attr("transform", "translate(460, 250)");
 
-        gatewayGroup.append("rect")
-            .attr("x", -100)
-            .attr("y", -60)
-            .attr("width", 200)
-            .attr("height", 120)
-            .attr("fill", "#1e293b")
-            .attr("stroke", "#3b82f6")
+        gatewayGroup.append("circle")
+            .attr("r", 140)
+            .attr("fill", "#0C0C0C")
+            .attr("stroke", "#928E8B")
             .attr("stroke-width", 3)
             .attr("rx", 10);
 
@@ -104,7 +120,7 @@ const MGatewayOne = () => {
             .attr("text-anchor", "middle")
             .attr("y", -20)
             .attr("fill", "#f8fafc")
-            .style("font-size", "18px")
+            .style("font-size", "1.4em")
             .style("font-weight", "bold")
             .text("Martian Gateway");
 
@@ -112,21 +128,21 @@ const MGatewayOne = () => {
             .attr("text-anchor", "middle")
             .attr("y", 5)
             .attr("fill", "#94a3b8")
-            .style("font-size", "12px")
+            .style("font-size", "1.1em")
             .text("Intelligent Router");
 
         // Reliability indicator
         gatewayGroup.append("circle")
-            .attr("cx", 0)
+            .attr("cx", -70)
             .attr("cy", 30)
             .attr("r", 8)
             .attr("fill", "#10b981");
 
         gatewayGroup.append("text")
-            .attr("x", 15)
+            .attr("x", -55)
             .attr("y", 35)
             .attr("fill", "#94a3b8")
-            .style("font-size", "11px")
+            .style("font-size", "1em")
             .text("99.9% Uptime");
 
         // Draw Providers
@@ -135,13 +151,12 @@ const MGatewayOne = () => {
                 .attr("class", `provider-${provider.id}`)
                 .attr("transform", `translate(${provider.x}, ${provider.y})`);
 
-            providerGroup.append("rect")
-                .attr("x", -50)
-                .attr("y", -30)
+            providerGroup.append("circle")
+                .attr("r", 65)
                 .attr("width", 100)
                 .attr("height", 60)
                 .attr("fill", provider.color)
-                .attr("fill-opacity", 0.1)
+                .attr("fill-opacity", 0.5)
                 .attr("stroke", provider.color)
                 .attr("stroke-width", 2)
                 .attr("rx", 8);
@@ -149,8 +164,8 @@ const MGatewayOne = () => {
             providerGroup.append("text")
                 .attr("text-anchor", "middle")
                 .attr("y", 5)
-                .attr("fill", provider.color)
-                .style("font-size", "14px")
+                .attr("fill", "#fff")
+                .style("font-size", "1em")
                 .style("font-weight", "600")
                 .text(provider.name);
 
@@ -181,49 +196,34 @@ const MGatewayOne = () => {
             .attr("text-anchor", "middle")
             .attr("y", -5)
             .attr("fill", "#064e3b")
-            .style("font-size", "14px")
+            .style("font-size", "1.2em")
             .style("font-weight", "bold")
             .text("Cost Savings");
 
         costGroup.append("text")
-            .attr("x", -50)
-            .attr("y", 20)
-            .attr("fill", "#dc2626")
-            .style("font-size", "16px")
-            .style("text-decoration", "line-through")
-            .text("$39");
-
-        costGroup.append("text")
-            .attr("x", 0)
+            .attr("text-anchor", "middle")
             .attr("y", 20)
             .attr("fill", "#059669")
-            .style("font-size", "20px")
+            .style("font-size", "1em")
             .style("font-weight", "bold")
-            .text("$4");
-
-        costGroup.append("text")
-            .attr("x", 35)
-            .attr("y", 20)
-            .attr("fill", "#064e3b")
-            .style("font-size", "12px")
-            .text("(90% less!)");
+            .text("20%");
 
     }, []);
 
     // Animate query flow
     const animateQuery = (queryText) => {
-        const svg = d3.select(svgRef.current);
+        const svg = d3.select(svgGatewayOneRef.current);
         const queryId = Date.now();
 
         // Create query packet
         const queryPacket = svg.append("g")
             .attr("class", `query-${queryId}`)
-            .attr("transform", "translate(100, 250)");
+            .attr("transform", "translate(135, 250)");
 
         queryPacket.append("rect")
-            .attr("x", -40)
+            .attr("x", -60)
             .attr("y", -15)
-            .attr("width", 80)
+            .attr("width", 120)
             .attr("height", 30)
             .attr("fill", "#3b82f6")
             .attr("rx", 15)
@@ -233,7 +233,7 @@ const MGatewayOne = () => {
             .attr("text-anchor", "middle")
             .attr("y", 5)
             .attr("fill", "#ffffff")
-            .style("font-size", "11px")
+            .style("font-size", ".875em")
             .text("Query");
 
         // Animate to gateway
@@ -257,24 +257,33 @@ const MGatewayOne = () => {
     };
 
     const showFailure = (queryId, failedProvider, queryText) => {
-        const svg = d3.select(svgRef.current);
+        const svg = d3.select(svgGatewayOneRef.current);
 
         // Mark provider as failed
         svg.select(`.status-${failedProvider.id}`)
-            .attr("fill", "#ef4444");
+            .attr("fill", "#f59e0b");
 
-        // Show X mark
-        const failMark = svg.append("text")
-            .attr("x", failedProvider.x)
-            .attr("y", failedProvider.y)
-            .attr("text-anchor", "middle")
-            .attr("fill", "#ef4444")
-            .style("font-size", "40px")
-            .style("font-weight", "bold")
-            .text("✗")
+        // Triangle alert icon near failure
+        const alertIconGroup = svg.append("g")
+            .attr("transform", `translate(${failedProvider.x + 28}, ${failedProvider.y - 28})`)
             .attr("opacity", 0);
 
-        failMark.transition()
+        alertIconGroup.append("polygon")
+            .attr("points", "0,-12 10,8 -10,8")
+            .attr("fill", "#f59e0b")
+            .attr("stroke", "#b45309")
+            .attr("stroke-width", 2)
+            .attr("rx", 2);
+
+        alertIconGroup.append("text")
+            .attr("text-anchor", "middle")
+            .attr("y", 5)
+            .attr("fill", "#111827")
+            .style("font-size", "1em")
+            .style("font-weight", "bold")
+            .text("!");
+
+        alertIconGroup.transition()
             .duration(300)
             .attr("opacity", 1)
             .transition()
@@ -307,9 +316,9 @@ const MGatewayOne = () => {
                 .attr("text-anchor", "middle")
                 .attr("y", 87)
                 .attr("fill", "#78350f")
-                .style("font-size", "12px")
+                .style("font-size", "1em")
                 .style("font-weight", "500")
-                .text("Auto-retry");
+                .text("⚠ Auto-retry");
 
             retryNotif.transition()
                 .duration(1000)
@@ -321,7 +330,7 @@ const MGatewayOne = () => {
     };
 
     const routeToProvider = (queryId, provider, queryText) => {
-        const svg = d3.select(svgRef.current);
+        const svg = d3.select(svgGatewayOneRef.current);
         const queryPacket = svg.select(`.query-${queryId}`);
 
         // Highlight connection
@@ -363,7 +372,7 @@ const MGatewayOne = () => {
 
                                 // Update stats
                                 setQueryCount(prev => prev + 1);
-                                setTotalSaved(prev => prev + 35);
+                                setTotalSaved(prev => prev + 0.02);
                             });
                     });
             });
@@ -381,58 +390,58 @@ const MGatewayOne = () => {
     };
 
     useEffect(() => {
-        const interval = setInterval(sendQuery, 3000);
+        const interval = setInterval(sendQuery, 7000);
         return () => clearInterval(interval);
     }, []);
 
     return (
         <div className="w-full bg-gray-50 p-8">
             <div className="max-w-6xl mx-auto">
-                <div className="bg-white rounded-lg shadow-lg p-6">
-                    <h1 className="text-3xl font-bold text-gray-800 mb-2">Martian Gateway: Intelligent LLM Router</h1>
-                    <p className="text-gray-600 mb-6">Watch how queries flow through our unified interface with automatic failover and 90% cost reduction</p>
-
-                    <div className="flex gap-6 mb-6">
-                        <div className="bg-blue-50 rounded-lg p-4 flex-1">
-                            <h3 className="font-semibold text-blue-800 mb-1">Queries Processed</h3>
-                            <p className="text-2xl font-bold text-blue-600">{queryCount}</p>
-                        </div>
-                        <div className="bg-green-50 rounded-lg p-4 flex-1">
-                            <h3 className="font-semibold text-green-800 mb-1">Total Saved</h3>
-                            <p className="text-2xl font-bold text-green-600">${totalSaved}</p>
-                        </div>
-                        <div className="bg-purple-50 rounded-lg p-4 flex-1">
-                            <h3 className="font-semibold text-purple-800 mb-1">Reliability</h3>
-                            <p className="text-2xl font-bold text-purple-600">99.9%</p>
-                        </div>
+                <h1 className="text-3xl font-bold text-gray-800 mb-2">Martian Gateway: Intelligent LLM Router</h1>
+                <p className="text-gray-600 mb-6">Watch how queries flow through our unified interface with automatic failover and 90% cost reduction</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="bg-white p-4 rounded shadow">
+                        <p className="text-gray-600 mb-4 text-base">
+                            Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+                        </p>
+                        <p className="text-gray-600 mb-4 text-base">
+                            Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+                        </p>
+                        <p className="text-gray-600 mb-4 text-base">
+                            Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+                        </p>
                     </div>
-
-                    <svg ref={svgRef} width="900" height="500" className="border border-gray-200 rounded-lg bg-gray-50"></svg>
-
-                    <div className="mt-6">
-                        <h3 className="font-semibold text-gray-800 mb-3">Recent Queries</h3>
-                        <div className="space-y-2">
-                            {queries.map(query => (
-                                <div key={query.id} className="bg-gray-50 rounded p-3 flex justify-between items-center">
-                                    <span className="text-gray-700">{query.text}</span>
-                                    <span className="text-gray-500 text-sm">{query.timestamp}</span>
-                                </div>
-                            ))}
+                    <div className="">
+                        <div className="flex gap-6 mb-6">
+                            <div className="bg-mt-red shadow rounded-lg p-4 flex-1 ">
+                                <h3 className="font-semibold mb-1">Queries Processed</h3>
+                                <p className="text-2xl font-bold text-white">{queryCount}</p>
+                            </div>
+                            <div className="bg-mt-green shadow rounded-lg p-4 flex-1">
+                                <h3 className="font-semibold mb-1">Total Saved</h3>
+                                <p className="text-2xl font-bold text-white">${totalSaved.toFixed(2)}</p>
+                            </div>
+                            <div className="bg-mt-yellow shadow rounded-lg p-4 flex-1">
+                                <h3 className="font-semibold mb-1">Reliability</h3>
+                                <p className="text-2xl font-bold text-white">99.9%</p>
+                            </div>
                         </div>
-                    </div>
-
-                    <div className="mt-6 grid grid-cols-3 gap-4">
-                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                            <h4 className="font-semibold text-yellow-800 mb-2">🔄 Auto-Retry</h4>
-                            <p className="text-sm text-yellow-700">Failed requests automatically reroute to healthy providers</p>
+                        <div className="bg-white rounded-lg shadow-lg p-4">
+                            <svg ref={svgGatewayOneRef}></svg>
                         </div>
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                            <h4 className="font-semibold text-blue-800 mb-2">🎯 Unified Interface</h4>
-                            <p className="text-sm text-blue-700">Single API endpoint for all LLM providers</p>
-                        </div>
-                        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                            <h4 className="font-semibold text-green-800 mb-2">💰 Cost Optimization</h4>
-                            <p className="text-sm text-green-700">Intelligent routing reduces costs by 90%</p>
+                        <div className="mt-6 grid grid-cols-3 gap-4">
+                            <div className="bg-mt-red shadow rounded-lg p-4">
+                                <h4 className="font-semibold mb-2">🔄 Auto-Retry</h4>
+                                <p className="text-sm text-white">Failed requests automatically reroute to healthy providers</p>
+                            </div>
+                            <div className="bg-mt-green shadow rounded-lg p-4">
+                                <h4 className="font-semibold mb-2">🎯 Unified Interface</h4>
+                                <p className="text-sm text-white">Single API endpoint for all LLM providers</p>
+                            </div>
+                            <div className="bg-mt-yellow shadow rounded-lg p-4">
+                                <h4 className="font-semibold mb-2">💰 Unified Billing</h4>
+                                <p className="text-sm text-white">One payment method for all providers. Pay-as-you-go across OpenAI, Anthropic, Google, and more - all on a single invoice.</p>
+                            </div>
                         </div>
                     </div>
                 </div>

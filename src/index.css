@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
 @import 'tailwindcss';
 
 
@@ -7,6 +8,7 @@ a {
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
 }
@@ -16,6 +18,43 @@ body {
   display: flex;
   place-items: center;
   font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(100%, 0.5rem + 1vw, 125%);
   min-width: 320px;
   min-height: 100vh;
+}
+
+p {
+  font-family: "Work Sans", sans-serif;
+}
+
+.bg-mt-active-prompt {
+  background-color: #C8FFEB;
+}
+
+.bg-mt-gray {
+  background-color: #F5F5F5;
+}
+
+.bg-mt-yellow {
+  background-color: #F9B023;
+}
+
+.color-mt-yellow {
+  color: #6E4E13;
+}
+
+.bg-mt-green {
+  background-color: #55C89F;
+}
+
+.color-mt-green {
+  color: #236554;
+}
+
+.bg-mt-red {
+  background-color: #FF7D68;
+}
+
+.color-mt-red {
+  color: #F5C0B8;
 }
