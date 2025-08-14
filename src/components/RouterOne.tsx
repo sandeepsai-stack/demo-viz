@@ -253,7 +253,7 @@ export const RouterOne = () => {
         if (!svgRef.current) return;
         const svg = d3.select(svgRef.current);
         const width = 1200;
-        const height = 460;
+        const height = 500;
 
         // Clear previous visualization
         svg.selectAll('*').remove();
@@ -271,7 +271,7 @@ export const RouterOne = () => {
         const shadowFilter = defs.append('filter').attr('id', 'shadow').attr('x', '-50%').attr('y', '-50%').attr('width', '200%').attr('height', '200%');
         shadowFilter.append('feDropShadow').attr('dx', '0').attr('dy', '2').attr('stdDeviation', '3').attr('flood-color', 'rgba(0, 0, 0, 0.15)').attr('flood-opacity', '0.5');
         // Add background rect
-        svg.append('rect').attr('width', width).attr('height', height).attr('fill', 'url(#bg-gradient)').attr('rx', 8);
+        svg.append('rect').attr('width', width).attr('height', height).attr('fill', 'url(#bg-gradient)').attr('rx', 8).attr("opacity", 0.3);
         // Define model positions in a circular layout
         const modelPositions = [{
             x: width * 0.75,
@@ -994,9 +994,7 @@ export const RouterOne = () => {
                     </div>}
                     <div className="border-t border-gray-200 pt-6">
                         <h2 className="text-xl font-semibold mb-4">Routing Visualization:</h2>
-                        <div className="h-[500px] w-full">
-                            <svg ref={svgRef} viewBox="0 0 1200 460" width="100%" height="100%"></svg>
-                        </div>
+                        <svg ref={svgRef} viewBox="0 0 1200 500" width="100%" height="500"></svg>
                     </div>
                     {/* Performance Comparison Section */}
                     {showPerformanceComparison && <div className="mb-8 border-t border-gray-200 pt-6">
@@ -1113,7 +1111,7 @@ export const RouterOne = () => {
                                 </div>
                             </div>
                         </div>
-                        <svg ref={performanceChartRef} viewBox="0 0 1200 460" width="100%"></svg>
+                        <svg ref={performanceChartRef} viewBox="0 0 1200 500" width="100%"></svg>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                             <div className="bg-blue-50 p-4 rounded-lg">
                                 <h3 className="font-medium text-blue-800 mb-2">
