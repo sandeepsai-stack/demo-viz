@@ -858,101 +858,114 @@ const RouterTwo = () => {
               Watch how queries are intelligently routed to the right AI model in real-time
             </p>
           </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              {/* Metrics Dashboard */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="bg-mt-red rounded-xl p-6 shadow-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium">Cost Savings</span>
+                    <span className="text-2xl">💰</span>
+                  </div>
+                  <p className="text-3xl font-bold">
+                    {formatCurrency(totalSavings)}
+                  </p>
+                  <p className="text-sm mt-1">
+                    vs. always using premium models
+                  </p>
+                </div>
 
-          {/* Metrics Dashboard */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-mt-red rounded-xl p-6 shadow-lg">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">Cost Savings</span>
-                <span className="text-2xl">💰</span>
+                <div className="bg-mt-green rounded-xl p-6 shadow-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium">Queries Processed</span>
+                    <span className="text-2xl">⚡</span>
+                  </div>
+                  <p className="text-3xl font-bold">
+                    {processedCount.toLocaleString()}
+                  </p>
+                  <p className="text-sm mt-1">
+                    intelligently routed today
+                  </p>
+                </div>
+
+                <div className="bg-mt-yellow rounded-xl p-6 shadow-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium">Avg Response Time</span>
+                    <span className="text-2xl">🚀</span>
+                  </div>
+                  <p className="text-3xl font-bold">
+                    0.8s
+                  </p>
+                  <p className="text-sm mt-1">
+                    65% faster than baseline
+                  </p>
+                </div>
               </div>
-              <p className="text-3xl font-bold">
-                {formatCurrency(totalSavings)}
-              </p>
-              <p className="text-sm mt-1">
-                vs. always using premium models
-              </p>
-            </div>
+              {/* Main Visualization */}
+              <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-2xl font-semibold text-gray-800">
+                    Live Routing Process
+                  </h2>
+                  <button
+                    onClick={() => setIsPaused(!isPaused)}
+                    className="px-4 py-2 bg-mt-red rounded-lg transition-colors"
+                  >
+                    {isPaused ? 'Resume' : 'Pause'} Animation
+                  </button>
+                </div>
 
-            <div className="bg-mt-green rounded-xl p-6 shadow-lg">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">Queries Processed</span>
-                <span className="text-2xl">⚡</span>
-              </div>
-              <p className="text-3xl font-bold">
-                {processedCount.toLocaleString()}
-              </p>
-              <p className="text-sm mt-1">
-                intelligently routed today
-              </p>
-            </div>
+                {/* Phase description */}
+                <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className={`h-3 w-3 rounded-full animate-pulse ${animationPhase === 'incoming' ? 'bg-blue-500' :
+                      animationPhase === 'analyzing' ? 'bg-yellow-500' :
+                        animationPhase === 'routing' ? 'bg-purple-500' :
+                          animationPhase === 'complete' ? 'bg-green-500' :
+                            'bg-gray-300'
+                      }`}></div>
+                    <span className="text-sm font-medium text-gray-700">
+                      {getPhaseDescription()}
+                    </span>
+                  </div>
+                </div>
 
-            <div className="bg-mt-yellow rounded-xl p-6 shadow-lg">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">Avg Response Time</span>
-                <span className="text-2xl">🚀</span>
-              </div>
-              <p className="text-3xl font-bold">
-                0.8s
-              </p>
-              <p className="text-sm mt-1">
-                65% faster than baseline
-              </p>
-            </div>
-          </div>
+                <svg ref={svgRef} width="100%" height="460" viewBox="0 0 1000 460"
+                  className="w-full rounded-lg bg-gradient-to-br from-gray-50 to-white">
+                </svg>
 
-          {/* Main Visualization */}
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-semibold text-gray-800">
-                Live Routing Process
-              </h2>
-              <button
-                onClick={() => setIsPaused(!isPaused)}
-                className="px-4 py-2 bg-mt-red rounded-lg transition-colors"
-              >
-                {isPaused ? 'Resume' : 'Pause'} Animation
-              </button>
-            </div>
+                {/* Progress indicator */}
+                <div className="mt-6 flex justify-center items-center gap-2">
+                  {prompts.map((_, index) => (
+                    <div
+                      key={index}
+                      className={`h-2 transition-all duration-1000 ${index === activePromptIndex
+                        ? 'w-12 bg-indigo-600 rounded-full'
+                        : index < activePromptIndex
+                          ? 'w-2 bg-indigo-300 rounded-full'
+                          : 'w-2 bg-gray-300 rounded-full'
+                        }`}
+                    />
+                  ))}
+                </div>
 
-            {/* Phase description */}
-            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-              <div className="flex items-center gap-3">
-                <div className={`h-3 w-3 rounded-full animate-pulse ${animationPhase === 'incoming' ? 'bg-blue-500' :
-                    animationPhase === 'analyzing' ? 'bg-yellow-500' :
-                      animationPhase === 'routing' ? 'bg-purple-500' :
-                        animationPhase === 'complete' ? 'bg-green-500' :
-                          'bg-gray-300'
-                  }`}></div>
-                <span className="text-sm font-medium text-gray-700">
-                  {getPhaseDescription()}
-                </span>
+                {/* Current prompt info */}
+                <div className="mt-4 text-center text-sm text-gray-600">
+                  Processing prompt {activePromptIndex + 1} of {prompts.length}:
+                  <span className="font-medium text-gray-800"> "{prompts[activePromptIndex].text}"</span>
+                </div>
               </div>
             </div>
-
-            <svg ref={svgRef} width="100%" height="460" viewBox="0 0 1000 460"
-              className="w-full rounded-lg bg-gradient-to-br from-gray-50 to-white">
-            </svg>
-
-            {/* Progress indicator */}
-            <div className="mt-6 flex justify-center items-center gap-2">
-              {prompts.map((_, index) => (
-                <div
-                  key={index}
-                  className={`h-2 transition-all duration-1000 ${index === activePromptIndex
-                      ? 'w-12 bg-indigo-600 rounded-full'
-                      : index < activePromptIndex
-                        ? 'w-2 bg-indigo-300 rounded-full'
-                        : 'w-2 bg-gray-300 rounded-full'
-                    }`}
-                />
-              ))}
-            </div>
-
-            {/* Current prompt info */}
-            <div className="mt-4 text-center text-sm text-gray-600">
-              Processing prompt {activePromptIndex + 1} of {prompts.length}:
-              <span className="font-medium text-gray-800"> "{prompts[activePromptIndex].text}"</span>
+            <div className="bg-white p-4 rounded shadow">
+              <p className="text-gray-600 mb-4 text-base">
+                Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+              </p>
+              <p className="text-gray-600 mb-4 text-base">
+                Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+              </p>
+              <p className="text-gray-600 mb-4 text-base">
+                Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+              </p>
             </div>
           </div>
         </div>

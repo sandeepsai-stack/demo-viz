@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import * as d3 from 'd3';
 import { promptExamples, modelData } from '../utils/data';
-import { PlayIcon, PauseIcon, StepForwardIcon, StepBackIcon, RepeatIcon, BarChartIcon, CheckCircleIcon, BrainIcon, NetworkIcon, ActivityIcon, CpuIcon, ZapIcon, DollarSignIcon, TargetIcon, AlertCircleIcon, ChevronDownIcon, ChevronUpIcon, ArrowRightIcon, TableIcon } from 'lucide-react';
+import { PlayIcon, PauseIcon, StepForwardIcon, StepBackIcon, RepeatIcon, BarChartIcon, CheckCircleIcon, ZapIcon, DollarSignIcon, TargetIcon, AlertCircleIcon, ChevronDownIcon, ChevronUpIcon, TableIcon } from 'lucide-react';
 interface promptExample {
     type: string;
     text: string;
@@ -794,572 +794,586 @@ export const RouterOne = () => {
     const savingsData = calculateSavings();
     return (<div className="w-full bg-gray-50 p-8">
         <div className="max-w-7xl mx-auto">
-            <div className="bg-white rounded-lg shadow-md p-6">
-                <div className="mb-8">
-                    <h1 className="text-3xl font-semibold mb-4">Prompt Router Demo:</h1>
-                    {/* Demo controls */}
-                    <div className="bg-mt-gray flex items-center justify-between mb-6 p-4 rounded-lg">
-                        <div className="flex items-center space-x-2">
-                            <button onClick={handlePrevPrompt} disabled={animationInProgress} className="p-2 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed" title="Previous prompt">
-                                <StepBackIcon size={20} />
-                            </button>
-                            <button onClick={toggleAutoPlay} disabled={animationInProgress} className="p-2 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed" title={autoPlayActive ? 'Pause demo' : 'Play demo'}>
-                                {autoPlayActive ? <PauseIcon size={20} /> : <PlayIcon size={20} />}
-                            </button>
-                            <button onClick={handleNextPrompt} disabled={animationInProgress} className="p-2 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed" title="Next prompt">
-                                <StepForwardIcon size={20} />
-                            </button>
-                            <button onClick={resetDemo} className="p-2 rounded-full hover:bg-gray-200 ml-2" title="Reset demo">
-                                <RepeatIcon size={20} />
-                            </button>
-                            <button onClick={togglePerformanceComparison} className={`p-2 rounded-full hover:bg-gray-200 ml-4 ${showPerformanceComparison ? 'bg-indigo-100' : ''}`} title="Show performance comparison">
-                                <BarChartIcon size={20} />
-                            </button>
-                            <button onClick={toggleComparisonTable} className={`p-2 rounded-full hover:bg-gray-200 ml-1 ${showComparisonTable ? 'bg-indigo-100' : ''}`} title="Show comparison table">
-                                <TableIcon size={20} />
-                            </button>
-                        </div>
-                        <div className="text-sm text-gray-500">
-                            Prompt {currentPromptIndex + 1} of {promptExamples.length}
-                            {animationInProgress && <span className="ml-2 text-indigo-500">Routing...</span>}
-                        </div>
-                    </div>
-                    {/* Current prompt card */}
-                    <div className="p-4 rounded-lg border-l-4 bg-mt-active-prompt mb-4">
-                        <div className="flex items-center mb-2">
-                            <span className={`inline-block w-3 h-3 rounded-full mr-2 ${selectedPrompt.type === 'simple' ? 'bg-blue-500' : selectedPrompt.type === 'complex' ? 'bg-purple-500' : 'bg-green-500'}`}></span>
-                            <span className="font-medium text-gray-800">
-                                {selectedPrompt.type.charAt(0).toUpperCase() + selectedPrompt.type.slice(1)}{' '}
-                                Prompt
-                            </span>
-                            {selectedPrompt.type === 'specialist' && <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${selectedPrompt.domain === 'legal' ? 'bg-red-100 text-red-800' : selectedPrompt.domain === 'medical' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                                {selectedPrompt.domain}
-                            </span>}
-                        </div>
-                        <p className="text-gray-700">{selectedPrompt.text}</p>
-                    </div>
-                    {/* All prompts list (collapsed) */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 mb-6">
-                        {promptExamples.map((prompt, index) => <div key={index} className={`p-3 rounded-lg cursor-pointer transition-all ${currentPromptIndex === index ? 'bg-mt-active-prompt border-2' : 'bg-mt-gray border-2 border-transparent hover:bg-gray-200'}`} onClick={() => {
-                            setCurrentPromptIndex(index);
-                            setSelectedPrompt(prompt);
-                        }}>
-                            <div className="flex items-center">
-                                <span className={`inline-block w-2 h-2 rounded-full mr-2 ${prompt.type === 'simple' ? 'bg-blue-500' : prompt.type === 'complex' ? 'bg-purple-500' : 'bg-green-500'}`}></span>
-                                <span className="text-xs font-medium text-gray-800 truncate">
-                                    {prompt.text.length > 40 ? prompt.text.substring(0, 37) + '...' : prompt.text}
-                                </span>
-                            </div>
-                        </div>)}
-                    </div>
-                </div>
-                {/* Comparison Table */}
-                {showComparisonTable && <div className="mb-8 bg-white p-4 rounded-lg border border-gray-200">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                            <TableIcon size={18} className="inline mr-2" />
-                            Model Comparison: Single Model vs. Router
-                        </h3>
-                        <button onClick={toggleComparisonTable} className="text-gray-500 hover:text-gray-700">
-                            <ChevronUpIcon size={20} />
-                        </button>
-                    </div>
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead>
-                                <tr>
-                                    <th className="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Prompt Type
-                                    </th>
-                                    <th className="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Distribution
-                                    </th>
-                                    <th className="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        SmallGPT
-                                    </th>
-                                    <th className="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        LargeGPT
-                                    </th>
-                                    <th className="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-purple-50">
-                                        Best Specialist
-                                    </th>
-                                    <th className="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Router
-                                    </th>
-                                    <th className="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Improvement
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                                {performanceData.promptTypes.map((type, i) => {
-                                    // Find best specialist model for this prompt type
-                                    const specialists = ['LegalGPT', 'MedicalGPT', 'TechGPT'];
-                                    const bestSpecialist = specialists.reduce((best, current) => {
-                                        return performanceData.models[current][type] > performanceData.models[best][type] ? current : best;
-                                    }, specialists[0]);
-                                    const bestSpecialistScore = performanceData.models[bestSpecialist][type];
-                                    const smallScore = performanceData.models['SmallGPT'][type];
-                                    const largeScore = performanceData.models['LargeGPT'][type];
-                                    const routerScore = performanceData.models['Router'][type];
-                                    // Calculate improvement over LargeGPT
-                                    const improvement = ((routerScore - largeScore) / largeScore * 100).toFixed(1);
-                                    // Determine which model the router would use
-                                    const routerChoice = type === 'simple' ? 'SmallGPT' : type === 'complex' ? 'LargeGPT' : type === 'legal' ? 'LegalGPT' : type === 'medical' ? 'MedicalGPT' : 'TechGPT';
-                                    return <tr key={type} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                                            {type.charAt(0).toUpperCase() + type.slice(1)}
-                                        </td>
-                                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                                            {savingsData.promptDistribution[type]}%
-                                        </td>
-                                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                                            {(smallScore * 100).toFixed(0)}%
-                                        </td>
-                                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                                            {(largeScore * 100).toFixed(0)}%
-                                        </td>
-                                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                                            {(bestSpecialistScore * 100).toFixed(0)}% (
-                                            {bestSpecialist})
-                                        </td>
-                                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-purple-700 bg-purple-50">
-                                            {(routerScore * 100).toFixed(0)}%{' '}
-                                            <span className="text-xs text-gray-500">
-                                                ({routerChoice})
-                                            </span>
-                                        </td>
-                                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-green-600">
-                                            +{improvement}%
-                                        </td>
-                                    </tr>;
-                                })}
-                                <tr className="bg-gray-100">
-                                    <td className="px-4 py-3 whitespace-nowrap text-sm font-bold text-gray-900">
-                                        Average
-                                    </td>
-                                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                                        100%
-                                    </td>
-                                    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {(performanceData.models['SmallGPT'].average * 100).toFixed(0)}
-                                        %
-                                    </td>
-                                    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {(performanceData.models['LargeGPT'].average * 100).toFixed(0)}
-                                        %
-                                    </td>
-                                    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {/* Average of best specialists would be router's performance */}
-                                        {(performanceData.models['Router'].average * 100).toFixed(0)}
-                                        %
-                                    </td>
-                                    <td className="px-4 py-3 whitespace-nowrap text-sm font-bold text-purple-700 bg-purple-100">
-                                        {(performanceData.models['Router'].average * 100).toFixed(0)}
-                                        %
-                                    </td>
-                                    <td className="px-4 py-3 whitespace-nowrap text-sm font-bold text-green-600">
-                                        +
-                                        {((performanceData.models['Router'].average - performanceData.models['LargeGPT'].average) / performanceData.models['LargeGPT'].average * 100).toFixed(1)}
-                                        %
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div className="mt-4 text-sm text-gray-500">
-                        <p className="mb-2">
-                            <strong>Key Takeaway:</strong> The router selects the optimal
-                            model for each prompt type, resulting in better performance than
-                            any single model across all prompt types.
-                        </p>
-                        <p>
-                            While LargeGPT performs well on average, it's outperformed by
-                            specialists in their domains and wastes resources on simple
-                            prompts.
-                        </p>
-                    </div>
-                </div>}
-                <div className="border-t border-gray-200 pt-6">
-                    <h2 className="text-xl font-semibold mb-4">Routing Visualization:</h2>
-                    <div className="h-[500px] w-full">
-                        <svg ref={svgRef} viewBox="0 0 1200 460" width="100%" ></svg>
-                    </div>
-                </div>
-                {/* Performance Comparison Section */}
-                {showPerformanceComparison && <div className="mb-8 border-t border-gray-200 pt-6">
-                    <h2 className="text-xl font-semibold mb-2">
-                        Performance Comparison:
-                    </h2>
-                    <p className="text-gray-600 mb-4">
-                        See how the router outperforms any individual model by selecting the
-                        optimal model for each task type.
+            <h1 className="text-3xl font-semibold mb-4">Prompt Router Demo:</h1>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="bg-white p-4 rounded shadow">
+                    <p className="text-gray-600 mb-4 text-base">
+                        Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
                     </p>
-                    <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-500 mb-6">
-                        <h3 className="font-medium text-purple-800 flex items-center mb-2">
-                            <CheckCircleIcon size={18} className="mr-2" />
-                            Why Routing Beats Any Single Model
-                        </h3>
-                        <p className="text-sm text-purple-700 mb-3">
-                            No single model excels at every task. Even the best
-                            general-purpose model (LargeGPT) underperforms compared to
-                            specialists in their domains:
-                        </p>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                            <div className="bg-white p-3 rounded-lg shadow-sm">
-                                <div className="flex items-center text-red-600 font-medium mb-1">
-                                    <span className="inline-block w-2 h-2 rounded-full bg-red-500 mr-2"></span>
-                                    Legal Queries
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span>LargeGPT:</span>
-                                    <span className="font-medium">70%</span>
-                                </div>
-                                <div className="flex justify-between items-center font-medium text-red-600">
-                                    <span>LegalGPT:</span>
-                                    <span>96%</span>
-                                </div>
-                                <div className="text-xs text-gray-500 mt-1">
-                                    +26% improvement
-                                </div>
-                            </div>
-                            <div className="bg-white p-3 rounded-lg shadow-sm">
-                                <div className="flex items-center text-green-600 font-medium mb-1">
-                                    <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2"></span>
-                                    Medical Queries
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span>LargeGPT:</span>
-                                    <span className="font-medium">65%</span>
-                                </div>
-                                <div className="flex justify-between items-center font-medium text-green-600">
-                                    <span>MedicalGPT:</span>
-                                    <span>97%</span>
-                                </div>
-                                <div className="text-xs text-gray-500 mt-1">
-                                    +32% improvement
-                                </div>
-                            </div>
-                            <div className="bg-white p-3 rounded-lg shadow-sm">
-                                <div className="flex items-center text-amber-600 font-medium mb-1">
-                                    <span className="inline-block w-2 h-2 rounded-full bg-amber-500 mr-2"></span>
-                                    Technical Queries
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span>LargeGPT:</span>
-                                    <span className="font-medium">75%</span>
-                                </div>
-                                <div className="flex justify-between items-center font-medium text-amber-600">
-                                    <span>TechGPT:</span>
-                                    <span>94%</span>
-                                </div>
-                                <div className="text-xs text-gray-500 mt-1">
-                                    +19% improvement
-                                </div>
-                            </div>
-                        </div>
-                        <div className="mt-4">
-                            <h4 className="font-medium text-purple-800 mb-2">
-                                Overall Performance Comparison
-                            </h4>
-                            <div className="bg-white p-3 rounded-lg shadow-sm">
-                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
-                                    <div className="flex items-center mb-2 sm:mb-0">
-                                        <span className="inline-block w-3 h-3 rounded-full bg-indigo-500 mr-2"></span>
-                                        <span className="font-medium">
-                                            Best Single Model (LargeGPT):
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center">
-                                        <div className="w-32 h-5 bg-gray-200 rounded-full overflow-hidden mr-2">
-                                            <div className="h-full bg-indigo-500" style={{
-                                                width: '78%'
-                                            }}></div>
-                                        </div>
-                                        <span className="font-medium">78%</span>
-                                    </div>
-                                </div>
-                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                                    <div className="flex items-center mb-2 sm:mb-0">
-                                        <span className="inline-block w-3 h-3 rounded-full bg-purple-500 mr-2"></span>
-                                        <span className="font-medium">
-                                            Router (Best for Each Task):
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center">
-                                        <div className="w-32 h-5 bg-gray-200 rounded-full overflow-hidden mr-2">
-                                            <div className="h-full bg-purple-500" style={{
-                                                width: '94%'
-                                            }}></div>
-                                        </div>
-                                        <span className="font-medium">94%</span>
-                                    </div>
-                                </div>
-                                <div className="text-xs text-gray-500 mt-2">
-                                    +16% overall improvement with routing
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <svg ref={performanceChartRef} viewBox="0 0 1200 460" width="100%"></svg>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                        <div className="bg-blue-50 p-4 rounded-lg">
-                            <h3 className="font-medium text-blue-800 mb-2">
-                                Optimal Resource Allocation
-                            </h3>
-                            <p className="text-sm text-blue-700">
-                                For simple queries, a small model is often sufficient. The
-                                router can direct these to SmallGPT, saving costs while
-                                maintaining high quality (95% performance).
-                            </p>
-                        </div>
-                        <div className="bg-green-50 p-4 rounded-lg">
-                            <h3 className="font-medium text-green-800 mb-2">
-                                Domain Expertise
-                            </h3>
-                            <p className="text-sm text-green-700">
-                                Specialist models provide dramatically better results for
-                                domain-specific queries, with up to 32% improvement over even
-                                the largest general model.
-                            </p>
-                        </div>
-                        <div className="bg-amber-50 p-4 rounded-lg">
-                            <h3 className="font-medium text-amber-800 mb-2">
-                                Intelligent Scaling
-                            </h3>
-                            <p className="text-sm text-amber-700">
-                                The router ensures complex queries receive the computational
-                                power they need, while avoiding wasting resources on simpler
-                                tasks.
-                            </p>
-                        </div>
-                        <div className="bg-purple-50 p-4 rounded-lg">
-                            <h3 className="font-medium text-purple-800 mb-2">
-                                Consistent Excellence
-                            </h3>
-                            <p className="text-sm text-purple-700">
-                                By always selecting the best model for each task type, the
-                                router delivers consistently superior results across all
-                                categories of prompts.
-                            </p>
-                        </div>
-                    </div>
-                </div>}
-                <div className="mt-8 border-t border-gray-200 pt-6">
-                    <h2 className="text-xl font-semibold mb-4">Model Legend:</h2>
-                    <div className="flex flex-wrap gap-4">
-                        <div className="flex items-center">
-                            <span className="inline-block w-4 h-4 rounded-full bg-blue-500 mr-2"></span>
-                            <span className="text-sm">General Purpose</span>
-                        </div>
-                        <div className="flex items-center">
-                            <span className="inline-block w-4 h-4 rounded-full bg-red-500 mr-2"></span>
-                            <span className="text-sm">Legal Specialist</span>
-                        </div>
-                        <div className="flex items-center">
-                            <span className="inline-block w-4 h-4 rounded-full bg-green-500 mr-2"></span>
-                            <span className="text-sm">Medical Specialist</span>
-                        </div>
-                        <div className="flex items-center">
-                            <span className="inline-block w-4 h-4 rounded-full bg-yellow-500 mr-2"></span>
-                            <span className="text-sm">Technical Specialist</span>
-                        </div>
-                        <div className="flex items-center ml-8">
-                            <span className="inline-block w-3 h-3 rounded-full bg-gray-400 mr-1"></span>
-                            <span className="inline-block w-4 h-4 rounded-full bg-gray-400 mr-1"></span>
-                            <span className="inline-block w-5 h-5 rounded-full bg-gray-400 mr-2"></span>
-                            <span className="text-sm">Size = Capability</span>
-                        </div>
-                    </div>
+                    <p className="text-gray-600 mb-4 text-base">
+                        Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+                    </p>
+                    <p className="text-gray-600 mb-4 text-base">
+                        Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+                    </p>
                 </div>
-                {/* Cost & Performance Savings Table */}
-                <div className="mt-8 border-t border-gray-200 pt-6">
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-xl font-semibold">Cost & Performance Savings:</h2>
-                        <button onClick={toggleSavingsTable} className="text-indigo-600 hover:text-indigo-800 flex items-center">
-                            {showSavingsTable ? <>
-                                <ChevronUpIcon size={20} className="mr-1" />
-                                <span className="text-sm">Hide Details</span>
-                            </> : <>
-                                <ChevronDownIcon size={20} className="mr-1" />
-                                <span className="text-sm">Show Details</span>
-                            </>}
-                        </button>
+                <div>
+                    <div className="mb-8">
+                        {/* Demo controls */}
+                        <div className="bg-mt-gray flex items-center justify-between mb-6 p-4 rounded-lg">
+                            <div className="flex items-center space-x-2">
+                                <button onClick={handlePrevPrompt} disabled={animationInProgress} className="p-2 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed" title="Previous prompt">
+                                    <StepBackIcon size={20} />
+                                </button>
+                                <button onClick={toggleAutoPlay} disabled={animationInProgress} className="p-2 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed" title={autoPlayActive ? 'Pause demo' : 'Play demo'}>
+                                    {autoPlayActive ? <PauseIcon size={20} /> : <PlayIcon size={20} />}
+                                </button>
+                                <button onClick={handleNextPrompt} disabled={animationInProgress} className="p-2 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed" title="Next prompt">
+                                    <StepForwardIcon size={20} />
+                                </button>
+                                <button onClick={resetDemo} className="p-2 rounded-full hover:bg-gray-200 ml-2" title="Reset demo">
+                                    <RepeatIcon size={20} />
+                                </button>
+                                <button onClick={togglePerformanceComparison} className={`p-2 rounded-full hover:bg-gray-200 ml-4 ${showPerformanceComparison ? 'bg-indigo-100' : ''}`} title="Show performance comparison">
+                                    <BarChartIcon size={20} />
+                                </button>
+                                <button onClick={toggleComparisonTable} className={`p-2 rounded-full hover:bg-gray-200 ml-1 ${showComparisonTable ? 'bg-indigo-100' : ''}`} title="Show comparison table">
+                                    <TableIcon size={20} />
+                                </button>
+                            </div>
+                            <div className="text-sm text-gray-500">
+                                Prompt {currentPromptIndex + 1} of {promptExamples.length}
+                                {animationInProgress && <span className="ml-2 text-indigo-500">Routing...</span>}
+                            </div>
+                        </div>
+                        {/* Current prompt card */}
+                        <div className="p-4 rounded-lg border-l-4 bg-mt-active-prompt mb-4">
+                            <div className="flex items-center mb-2">
+                                <span className={`inline-block w-3 h-3 rounded-full mr-2 ${selectedPrompt.type === 'simple' ? 'bg-blue-500' : selectedPrompt.type === 'complex' ? 'bg-purple-500' : 'bg-green-500'}`}></span>
+                                <span className="font-medium text-gray-800">
+                                    {selectedPrompt.type.charAt(0).toUpperCase() + selectedPrompt.type.slice(1)}{' '}
+                                    Prompt
+                                </span>
+                                {selectedPrompt.type === 'specialist' && <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${selectedPrompt.domain === 'legal' ? 'bg-red-100 text-red-800' : selectedPrompt.domain === 'medical' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                    {selectedPrompt.domain}
+                                </span>}
+                            </div>
+                            <p className="text-gray-700">{selectedPrompt.text}</p>
+                        </div>
+                        {/* All prompts list (collapsed) */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 mb-6">
+                            {promptExamples.map((prompt, index) => <div key={index} className={`p-3 rounded-lg cursor-pointer transition-all ${currentPromptIndex === index ? 'bg-mt-active-prompt border-2' : 'bg-mt-gray border-2 border-transparent hover:bg-gray-200'}`} onClick={() => {
+                                setCurrentPromptIndex(index);
+                                setSelectedPrompt(prompt);
+                            }}>
+                                <div className="flex items-center">
+                                    <span className={`inline-block w-2 h-2 rounded-full mr-2 ${prompt.type === 'simple' ? 'bg-blue-500' : prompt.type === 'complex' ? 'bg-purple-500' : 'bg-green-500'}`}></span>
+                                    <span className="text-xs font-medium text-gray-800 truncate">
+                                        {prompt.text.length > 40 ? prompt.text.substring(0, 37) + '...' : prompt.text}
+                                    </span>
+                                </div>
+                            </div>)}
+                        </div>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                        <div className="bg-mt-red p-4 rounded-lg border-l-4">
-                            <div className="flex items-center mb-2">
-                                <DollarSignIcon size={20} className="mr-2" />
-                                <h3 className="font-medium">Cost Reduction</h3>
-                            </div>
-                            <div className="text-3xl font-bold text-white mb-2">
-                                {savingsData.savings['Cost Savings'].toFixed(0)}%
-                            </div>
-                            <p className="text-sm text-white">
-                                Savings compared to always using LargeGPT by routing simple
-                                prompts to smaller models
-                            </p>
+                    {/* Comparison Table */}
+                    {showComparisonTable && <div className="mb-8 bg-white p-4 rounded-lg border border-gray-200">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-semibold text-gray-900">
+                                <TableIcon size={18} className="inline mr-2" />
+                                Model Comparison: Single Model vs. Router
+                            </h3>
+                            <button onClick={toggleComparisonTable} className="text-gray-500 hover:text-gray-700">
+                                <ChevronUpIcon size={20} />
+                            </button>
                         </div>
-                        <div className="bg-mt-green p-4 rounded-lg border-l-4">
-                            <div className="flex items-center mb-2">
-                                <TargetIcon size={20} className="mr-2" />
-                                <h3 className="font-medium">Performance Gain</h3>
-                            </div>
-                            <div className="text-3xl font-bold text-white mb-2">
-                                {savingsData.savings['Performance Improvement'].toFixed(1)}%
-                            </div>
-                            <p className="text-sm text-white">
-                                Improved accuracy by routing to specialized models for
-                                domain-specific prompts
-                            </p>
-                        </div>
-                        <div className="bg-mt-yellow p-4 rounded-lg border-l-4">
-                            <div className="flex items-center mb-2">
-                                <ZapIcon size={20} className="mr-2" />
-                                <h3 className="font-medium">Efficiency Boost</h3>
-                            </div>
-                            <div className="text-3xl font-bold text-white mb-2">
-                                {savingsData.savings['Efficiency Gain'].toFixed(0)}%
-                            </div>
-                            <p className="text-sm text-white">
-                                Overall performance per unit cost compared to using a single model
-                            </p>
-                        </div>
-                    </div>
-                    {showSavingsTable && <div className="bg-white p-4 rounded-lg border border-gray-200 mb-6">
-                        <h3 className="text-lg font-semibold mb-4">
-                            Detailed Cost-Performance Analysis
-                        </h3>
                         <div className="overflow-x-auto">
                             <table className="min-w-full divide-y divide-gray-200">
                                 <thead>
                                     <tr>
                                         <th className="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Approach
+                                            Prompt Type
                                         </th>
                                         <th className="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Relative Cost
+                                            Distribution
                                         </th>
                                         <th className="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Performance
+                                            SmallGPT
                                         </th>
                                         <th className="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Efficiency Ratio
+                                            LargeGPT
+                                        </th>
+                                        <th className="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-purple-50">
+                                            Best Specialist
                                         </th>
                                         <th className="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Notes
+                                            Router
+                                        </th>
+                                        <th className="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Improvement
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
-                                    <tr>
+                                    {performanceData.promptTypes.map((type, i) => {
+                                        // Find best specialist model for this prompt type
+                                        const specialists = ['LegalGPT', 'MedicalGPT', 'TechGPT'];
+                                        const bestSpecialist = specialists.reduce((best, current) => {
+                                            return performanceData.models[current][type] > performanceData.models[best][type] ? current : best;
+                                        }, specialists[0]);
+                                        const bestSpecialistScore = performanceData.models[bestSpecialist][type];
+                                        const smallScore = performanceData.models['SmallGPT'][type];
+                                        const largeScore = performanceData.models['LargeGPT'][type];
+                                        const routerScore = performanceData.models['Router'][type];
+                                        // Calculate improvement over LargeGPT
+                                        const improvement = ((routerScore - largeScore) / largeScore * 100).toFixed(1);
+                                        // Determine which model the router would use
+                                        const routerChoice = type === 'simple' ? 'SmallGPT' : type === 'complex' ? 'LargeGPT' : type === 'legal' ? 'LegalGPT' : type === 'medical' ? 'MedicalGPT' : 'TechGPT';
+                                        return <tr key={type} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                                            <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                {type.charAt(0).toUpperCase() + type.slice(1)}
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                                {savingsData.promptDistribution[type]}%
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                                {(smallScore * 100).toFixed(0)}%
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                                {(largeScore * 100).toFixed(0)}%
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                                {(bestSpecialistScore * 100).toFixed(0)}% (
+                                                {bestSpecialist})
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-purple-700 bg-purple-50">
+                                                {(routerScore * 100).toFixed(0)}%{' '}
+                                                <span className="text-xs text-gray-500">
+                                                    ({routerChoice})
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-green-600">
+                                                +{improvement}%
+                                            </td>
+                                        </tr>;
+                                    })}
+                                    <tr className="bg-gray-100">
+                                        <td className="px-4 py-3 whitespace-nowrap text-sm font-bold text-gray-900">
+                                            Average
+                                        </td>
+                                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                            100%
+                                        </td>
                                         <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                                            Always SmallGPT
-                                        </td>
-                                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                                            1.0{' '}
-                                            <span className="text-green-600 text-xs">(Lowest)</span>
-                                        </td>
-                                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                                             {(performanceData.models['SmallGPT'].average * 100).toFixed(0)}
                                             %
                                         </td>
-                                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                                            {(performanceData.models['SmallGPT'].average / savingsData.costs['Always SmallGPT']).toFixed(2)}
-                                        </td>
-                                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                                            Low cost but poor performance on complex/specialized tasks
-                                        </td>
-                                    </tr>
-                                    <tr className="bg-gray-50">
                                         <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                                            Always LargeGPT
-                                        </td>
-                                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                                            10.0{' '}
-                                            <span className="text-red-600 text-xs">(Highest)</span>
-                                        </td>
-                                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                                             {(performanceData.models['LargeGPT'].average * 100).toFixed(0)}
                                             %
                                         </td>
-                                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                                            {(performanceData.models['LargeGPT'].average / savingsData.costs['Always LargeGPT']).toFixed(2)}
-                                        </td>
-                                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                                            Good general performance but wastes resources on simple
-                                            tasks
-                                        </td>
-                                    </tr>
-                                    <tr className="bg-purple-50">
-                                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-purple-900">
-                                            Prompt Router
-                                        </td>
-                                        <td className="px-4 py-3 whitespace-nowrap text-sm text-purple-900">
-                                            {savingsData.costs['Router'].toFixed(1)}{' '}
-                                            <span className="text-green-600 text-xs">
-                                                (
-                                                {(100 - savingsData.savings['Cost Savings']).toFixed(0)}
-                                                % of LargeGPT)
-                                            </span>
-                                        </td>
-                                        <td className="px-4 py-3 whitespace-nowrap text-sm text-purple-900">
+                                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                                            {/* Average of best specialists would be router's performance */}
                                             {(performanceData.models['Router'].average * 100).toFixed(0)}
                                             %
                                         </td>
-                                        <td className="px-4 py-3 whitespace-nowrap text-sm font-bold text-purple-900">
-                                            {(performanceData.models['Router'].average / savingsData.costs['Router']).toFixed(2)}{' '}
-                                            <span className="text-green-600 text-xs">(Best)</span>
+                                        <td className="px-4 py-3 whitespace-nowrap text-sm font-bold text-purple-700 bg-purple-100">
+                                            {(performanceData.models['Router'].average * 100).toFixed(0)}
+                                            %
                                         </td>
-                                        <td className="px-4 py-3 whitespace-nowrap text-sm text-purple-900">
-                                            Optimal balance of cost and performance for each prompt
-                                            type
+                                        <td className="px-4 py-3 whitespace-nowrap text-sm font-bold text-green-600">
+                                            +
+                                            {((performanceData.models['Router'].average - performanceData.models['LargeGPT'].average) / performanceData.models['LargeGPT'].average * 100).toFixed(1)}
+                                            %
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
-                        <div className="mt-4 bg-yellow-50 p-3 rounded-lg border-l-4 border-yellow-500">
-                            <div className="flex items-start">
-                                <AlertCircleIcon size={20} className="text-yellow-600 mr-2 mt-0.5" />
-                                <div>
-                                    <h4 className="text-sm font-medium text-yellow-800">
-                                        Cost Calculation Methodology
-                                    </h4>
-                                    <p className="text-xs text-yellow-700 mt-1">
-                                        Costs are calculated based on relative compute requirements:
-                                        SmallGPT (1×), MediumGPT/Specialists (3-5×), LargeGPT (10×).
-                                        The router adds a small overhead (0.5×) but saves
-                                        significantly by sending prompts to the most cost-efficient
-                                        model that can handle each task.
-                                    </p>
+                        <div className="mt-4 text-sm text-gray-500">
+                            <p className="mb-2">
+                                <strong>Key Takeaway:</strong> The router selects the optimal
+                                model for each prompt type, resulting in better performance than
+                                any single model across all prompt types.
+                            </p>
+                            <p>
+                                While LargeGPT performs well on average, it's outperformed by
+                                specialists in their domains and wastes resources on simple
+                                prompts.
+                            </p>
+                        </div>
+                    </div>}
+                    <div className="border-t border-gray-200 pt-6">
+                        <h2 className="text-xl font-semibold mb-4">Routing Visualization:</h2>
+                        <div className="h-[500px] w-full">
+                            <svg ref={svgRef} viewBox="0 0 1200 460" width="100%" height="100%"></svg>
+                        </div>
+                    </div>
+                    {/* Performance Comparison Section */}
+                    {showPerformanceComparison && <div className="mb-8 border-t border-gray-200 pt-6">
+                        <h2 className="text-xl font-semibold mb-2">
+                            Performance Comparison:
+                        </h2>
+                        <p className="text-gray-600 mb-4">
+                            See how the router outperforms any individual model by selecting the
+                            optimal model for each task type.
+                        </p>
+                        <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-500 mb-6">
+                            <h3 className="font-medium text-purple-800 flex items-center mb-2">
+                                <CheckCircleIcon size={18} className="mr-2" />
+                                Why Routing Beats Any Single Model
+                            </h3>
+                            <p className="text-sm text-purple-700 mb-3">
+                                No single model excels at every task. Even the best
+                                general-purpose model (LargeGPT) underperforms compared to
+                                specialists in their domains:
+                            </p>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                <div className="bg-white p-3 rounded-lg shadow-sm">
+                                    <div className="flex items-center text-red-600 font-medium mb-1">
+                                        <span className="inline-block w-2 h-2 rounded-full bg-red-500 mr-2"></span>
+                                        Legal Queries
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span>LargeGPT:</span>
+                                        <span className="font-medium">70%</span>
+                                    </div>
+                                    <div className="flex justify-between items-center font-medium text-red-600">
+                                        <span>LegalGPT:</span>
+                                        <span>96%</span>
+                                    </div>
+                                    <div className="text-xs text-gray-500 mt-1">
+                                        +26% improvement
+                                    </div>
+                                </div>
+                                <div className="bg-white p-3 rounded-lg shadow-sm">
+                                    <div className="flex items-center text-green-600 font-medium mb-1">
+                                        <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2"></span>
+                                        Medical Queries
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span>LargeGPT:</span>
+                                        <span className="font-medium">65%</span>
+                                    </div>
+                                    <div className="flex justify-between items-center font-medium text-green-600">
+                                        <span>MedicalGPT:</span>
+                                        <span>97%</span>
+                                    </div>
+                                    <div className="text-xs text-gray-500 mt-1">
+                                        +32% improvement
+                                    </div>
+                                </div>
+                                <div className="bg-white p-3 rounded-lg shadow-sm">
+                                    <div className="flex items-center text-amber-600 font-medium mb-1">
+                                        <span className="inline-block w-2 h-2 rounded-full bg-amber-500 mr-2"></span>
+                                        Technical Queries
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span>LargeGPT:</span>
+                                        <span className="font-medium">75%</span>
+                                    </div>
+                                    <div className="flex justify-between items-center font-medium text-amber-600">
+                                        <span>TechGPT:</span>
+                                        <span>94%</span>
+                                    </div>
+                                    <div className="text-xs text-gray-500 mt-1">
+                                        +19% improvement
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="mt-4">
+                                <h4 className="font-medium text-purple-800 mb-2">
+                                    Overall Performance Comparison
+                                </h4>
+                                <div className="bg-white p-3 rounded-lg shadow-sm">
+                                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
+                                        <div className="flex items-center mb-2 sm:mb-0">
+                                            <span className="inline-block w-3 h-3 rounded-full bg-indigo-500 mr-2"></span>
+                                            <span className="font-medium">
+                                                Best Single Model (LargeGPT):
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center">
+                                            <div className="w-32 h-5 bg-gray-200 rounded-full overflow-hidden mr-2">
+                                                <div className="h-full bg-indigo-500" style={{
+                                                    width: '78%'
+                                                }}></div>
+                                            </div>
+                                            <span className="font-medium">78%</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                                        <div className="flex items-center mb-2 sm:mb-0">
+                                            <span className="inline-block w-3 h-3 rounded-full bg-purple-500 mr-2"></span>
+                                            <span className="font-medium">
+                                                Router (Best for Each Task):
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center">
+                                            <div className="w-32 h-5 bg-gray-200 rounded-full overflow-hidden mr-2">
+                                                <div className="h-full bg-purple-500" style={{
+                                                    width: '94%'
+                                                }}></div>
+                                            </div>
+                                            <span className="font-medium">94%</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-xs text-gray-500 mt-2">
+                                        +16% overall improvement with routing
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="bg-mt-red p-4 rounded-lg">
-                            <h3 className="font-medium text-white mb-2">
-                                Cost Optimization
-                            </h3>
-                            <p className="text-sm text-white">
-                                By routing simple prompts to smaller models, organizations can
-                                reduce compute costs while maintaining quality for straightforward
-                                tasks.
-                            </p>
+                        <svg ref={performanceChartRef} viewBox="0 0 1200 460" width="100%"></svg>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                            <div className="bg-blue-50 p-4 rounded-lg">
+                                <h3 className="font-medium text-blue-800 mb-2">
+                                    Optimal Resource Allocation
+                                </h3>
+                                <p className="text-sm text-blue-700">
+                                    For simple queries, a small model is often sufficient. The
+                                    router can direct these to SmallGPT, saving costs while
+                                    maintaining high quality (95% performance).
+                                </p>
+                            </div>
+                            <div className="bg-green-50 p-4 rounded-lg">
+                                <h3 className="font-medium text-green-800 mb-2">
+                                    Domain Expertise
+                                </h3>
+                                <p className="text-sm text-green-700">
+                                    Specialist models provide dramatically better results for
+                                    domain-specific queries, with up to 32% improvement over even
+                                    the largest general model.
+                                </p>
+                            </div>
+                            <div className="bg-amber-50 p-4 rounded-lg">
+                                <h3 className="font-medium text-amber-800 mb-2">
+                                    Intelligent Scaling
+                                </h3>
+                                <p className="text-sm text-amber-700">
+                                    The router ensures complex queries receive the computational
+                                    power they need, while avoiding wasting resources on simpler
+                                    tasks.
+                                </p>
+                            </div>
+                            <div className="bg-purple-50 p-4 rounded-lg">
+                                <h3 className="font-medium text-purple-800 mb-2">
+                                    Consistent Excellence
+                                </h3>
+                                <p className="text-sm text-purple-700">
+                                    By always selecting the best model for each task type, the
+                                    router delivers consistently superior results across all
+                                    categories of prompts.
+                                </p>
+                            </div>
                         </div>
-                        <div className="bg-mt-green p-4 rounded-lg">
-                            <h3 className="font-medium text-white mb-2">
-                                Quality Improvement
+                    </div>}
+                    <div className="mt-8 border-t border-gray-200 pt-6">
+                        <h2 className="text-xl font-semibold mb-4">Model Legend:</h2>
+                        <div className="flex flex-wrap gap-4">
+                            <div className="flex items-center">
+                                <span className="inline-block w-4 h-4 rounded-full bg-blue-500 mr-2"></span>
+                                <span className="text-sm">General Purpose</span>
+                            </div>
+                            <div className="flex items-center">
+                                <span className="inline-block w-4 h-4 rounded-full bg-red-500 mr-2"></span>
+                                <span className="text-sm">Legal Specialist</span>
+                            </div>
+                            <div className="flex items-center">
+                                <span className="inline-block w-4 h-4 rounded-full bg-green-500 mr-2"></span>
+                                <span className="text-sm">Medical Specialist</span>
+                            </div>
+                            <div className="flex items-center">
+                                <span className="inline-block w-4 h-4 rounded-full bg-yellow-500 mr-2"></span>
+                                <span className="text-sm">Technical Specialist</span>
+                            </div>
+                            <div className="flex items-center ml-8">
+                                <span className="inline-block w-3 h-3 rounded-full bg-gray-400 mr-1"></span>
+                                <span className="inline-block w-4 h-4 rounded-full bg-gray-400 mr-1"></span>
+                                <span className="inline-block w-5 h-5 rounded-full bg-gray-400 mr-2"></span>
+                                <span className="text-sm">Size = Capability</span>
+                            </div>
+                        </div>
+                    </div>
+                    {/* Cost & Performance Savings Table */}
+                    <div className="mt-8 border-t border-gray-200 pt-6">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-xl font-semibold">Cost & Performance Savings:</h2>
+                            <button onClick={toggleSavingsTable} className="text-indigo-600 hover:text-indigo-800 flex items-center">
+                                {showSavingsTable ? <>
+                                    <ChevronUpIcon size={20} className="mr-1" />
+                                    <span className="text-sm">Hide Details</span>
+                                </> : <>
+                                    <ChevronDownIcon size={20} className="mr-1" />
+                                    <span className="text-sm">Show Details</span>
+                                </>}
+                            </button>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                            <div className="bg-mt-red p-4 rounded-lg border-l-4">
+                                <div className="flex items-center mb-2">
+                                    <DollarSignIcon size={20} className="mr-2" />
+                                    <h3 className="font-medium">Cost Reduction</h3>
+                                </div>
+                                <div className="text-3xl font-bold text-white mb-2">
+                                    {savingsData.savings['Cost Savings'].toFixed(0)}%
+                                </div>
+                                <p className="text-sm text-white">
+                                    Savings compared to always using LargeGPT by routing simple
+                                    prompts to smaller models
+                                </p>
+                            </div>
+                            <div className="bg-mt-green p-4 rounded-lg border-l-4">
+                                <div className="flex items-center mb-2">
+                                    <TargetIcon size={20} className="mr-2" />
+                                    <h3 className="font-medium">Performance Gain</h3>
+                                </div>
+                                <div className="text-3xl font-bold text-white mb-2">
+                                    {savingsData.savings['Performance Improvement'].toFixed(1)}%
+                                </div>
+                                <p className="text-sm text-white">
+                                    Improved accuracy by routing to specialized models for
+                                    domain-specific prompts
+                                </p>
+                            </div>
+                            <div className="bg-mt-yellow p-4 rounded-lg border-l-4">
+                                <div className="flex items-center mb-2">
+                                    <ZapIcon size={20} className="mr-2" />
+                                    <h3 className="font-medium">Efficiency Boost</h3>
+                                </div>
+                                <div className="text-3xl font-bold text-white mb-2">
+                                    {savingsData.savings['Efficiency Gain'].toFixed(0)}%
+                                </div>
+                                <p className="text-sm text-white">
+                                    Overall performance per unit cost compared to using a single model
+                                </p>
+                            </div>
+                        </div>
+                        {showSavingsTable && <div className="bg-white p-4 rounded-lg border border-gray-200 mb-6">
+                            <h3 className="text-lg font-semibold mb-4">
+                                Detailed Cost-Performance Analysis
                             </h3>
-                            <p className="text-sm text-white">
-                                Specialist models provide more accurate and reliable responses for
-                                domain-specific queries, improving overall user experience.
-                            </p>
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full divide-y divide-gray-200">
+                                    <thead>
+                                        <tr>
+                                            <th className="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Approach
+                                            </th>
+                                            <th className="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Relative Cost
+                                            </th>
+                                            <th className="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Performance
+                                            </th>
+                                            <th className="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Efficiency Ratio
+                                            </th>
+                                            <th className="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Notes
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-200">
+                                        <tr>
+                                            <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                Always SmallGPT
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                                1.0{' '}
+                                                <span className="text-green-600 text-xs">(Lowest)</span>
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                                {(performanceData.models['SmallGPT'].average * 100).toFixed(0)}
+                                                %
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                                {(performanceData.models['SmallGPT'].average / savingsData.costs['Always SmallGPT']).toFixed(2)}
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                                Low cost but poor performance on complex/specialized tasks
+                                            </td>
+                                        </tr>
+                                        <tr className="bg-gray-50">
+                                            <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                Always LargeGPT
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                                10.0{' '}
+                                                <span className="text-red-600 text-xs">(Highest)</span>
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                                {(performanceData.models['LargeGPT'].average * 100).toFixed(0)}
+                                                %
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                                {(performanceData.models['LargeGPT'].average / savingsData.costs['Always LargeGPT']).toFixed(2)}
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                                Good general performance but wastes resources on simple
+                                                tasks
+                                            </td>
+                                        </tr>
+                                        <tr className="bg-purple-50">
+                                            <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-purple-900">
+                                                Prompt Router
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap text-sm text-purple-900">
+                                                {savingsData.costs['Router'].toFixed(1)}{' '}
+                                                <span className="text-green-600 text-xs">
+                                                    (
+                                                    {(100 - savingsData.savings['Cost Savings']).toFixed(0)}
+                                                    % of LargeGPT)
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap text-sm text-purple-900">
+                                                {(performanceData.models['Router'].average * 100).toFixed(0)}
+                                                %
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap text-sm font-bold text-purple-900">
+                                                {(performanceData.models['Router'].average / savingsData.costs['Router']).toFixed(2)}{' '}
+                                                <span className="text-green-600 text-xs">(Best)</span>
+                                            </td>
+                                            <td className="px-4 py-3 whitespace-nowrap text-sm text-purple-900">
+                                                Optimal balance of cost and performance for each prompt
+                                                type
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className="mt-4 bg-yellow-50 p-3 rounded-lg border-l-4 border-yellow-500">
+                                <div className="flex items-start">
+                                    <AlertCircleIcon size={20} className="text-yellow-600 mr-2 mt-0.5" />
+                                    <div>
+                                        <h4 className="text-sm font-medium text-yellow-800">
+                                            Cost Calculation Methodology
+                                        </h4>
+                                        <p className="text-xs text-yellow-700 mt-1">
+                                            Costs are calculated based on relative compute requirements:
+                                            SmallGPT (1×), MediumGPT/Specialists (3-5×), LargeGPT (10×).
+                                            The router adds a small overhead (0.5×) but saves
+                                            significantly by sending prompts to the most cost-efficient
+                                            model that can handle each task.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="bg-mt-red p-4 rounded-lg">
+                                <h3 className="font-medium text-white mb-2">
+                                    Cost Optimization
+                                </h3>
+                                <p className="text-sm text-white">
+                                    By routing simple prompts to smaller models, organizations can
+                                    reduce compute costs while maintaining quality for straightforward
+                                    tasks.
+                                </p>
+                            </div>
+                            <div className="bg-mt-green p-4 rounded-lg">
+                                <h3 className="font-medium text-white mb-2">
+                                    Quality Improvement
+                                </h3>
+                                <p className="text-sm text-white">
+                                    Specialist models provide more accurate and reliable responses for
+                                    domain-specific queries, improving overall user experience.
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
     );
